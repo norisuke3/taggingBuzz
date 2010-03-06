@@ -1,0 +1,20 @@
+{
+  "name": "Tagging Buzz",
+  "version": "0.1",
+  "description": "Tag manager for Google Buzz.",
+  "icons": { "48": "buzz_48.png",
+	     "128": "buzz_128.png"  },
+  "background_page": "background.html",
+  "content_scripts": [
+  {
+    "matches": ["https://mail.google.com/mail*",
+	        "http://mail.google.com/mail*"],
+    "js": ["content.js"],
+    "all_frame": true
+  }
+  ],
+  "browser_action": {
+    "default_icon": "buzz_48.png"
+  },
+  "permissions": ["tabs", "https://mail.google.com/mail*"]
+}
