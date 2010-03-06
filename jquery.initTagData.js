@@ -4,11 +4,32 @@
    var TagInfo = function(){
      this.data = {
        permalink: "", 
-       tags: []
+       tags: []       
      };
+     
+     this.linked_elements = [];
    };
    
    $.extend(TagInfo.prototype, {
+     // tags setter
+     setter: function(val){
+       var self = this;
+       self.data.tags = [];
+     
+       val.split(',')
+          .map(function(tag){ return tag.trim(); })
+	  .filter(function(tag){ return tag != ""; })
+	  .forEach(function(tag){ self.data.tags.push(tag); });
+     
+       this.updateLinkedElements();
+       this.register();
+     },
+     
+     // tags getter
+     getter: function(){
+       return this.data.tags.reduce(function(a, b){ return a == "" ? b : a + ", "+ b; }, "");
+     },
+	      
      register: function(){
        chrome.extension.sendRequest({
 	 name: "register",
@@ -16,25 +37,16 @@
        }, function(){});
      },
 
-     // tags setter
-     setter: function(val){
+     updateLinkedElements: function(){
        var self = this;
-       self.data.tags = [];
-     
-       val.split(',')
-          .map(function(tag){ return tag.trim();   })
-	  .forEach(function(tag){ 
-	    if (tag != ""){
-	      self.data.tags.push(tag); 
-	    }
-	  });
+       var modules = {
+	 div  : function(elm){ elm.text("Tags: " + self.value); },
+	 input: function(elm){ elm.attr("value", self.value); }
+       };
        
-       this.register();
-     },
-     
-     // tags getter
-     getter: function(){
-       return this.data.tags.reduce(function(a, b){ return a == "" ? b : a + ", "+ b; }, "");
+       this.linked_elements.forEach(function(elm){
+	 modules[elm[0].tagName.toLowerCase()](elm);
+       });
      }
    });
    
@@ -42,25 +54,13 @@
    //
    // inner methods
    // 
-   var registerTag = function(evn){
-     var value = $("input", $(this))[0].value;
+   var updateTag = function(evn){
+     var tags = $("input", $(this))[0];
+     var tagInfo = $(this).prev().data("tags");
      
      if(evn.keyCode == 13){
-       $(this).prev().data("tags").value = value;
-       $(this).prev().text("Tags: " + $(this).prev().data("tags").value);
-       $("input", $(this))[0].value = $(this).prev().data("tags").value;
+       tagInfo.value = tags.value;
      }
-     
-   };
-   
-   /**
-    * getPermalink(obj jQuery)
-    *   returns a perma link of this buzz entry.
-    * 
-    *   jq_obj: jQuery object representing the "Tag" element.
-    */
-   var getPermalink = function(obj){
-     return obj.closest("div.G2").find("span.UPfPzb>div>a").attr("href");
    };
    
    //
@@ -72,15 +72,22 @@
        tagInfo.__defineSetter__("value", tagInfo.setter);
        tagInfo.__defineGetter__("value", tagInfo.getter);
 		 
-       tagInfo.data.permalink = getPermalink($(this));
-
+       tagInfo.linked_elements.push($(this));
+       tagInfo.linked_elements.push($(this).next().find("input"));
+		 
+       tagInfo.data.permalink = $(this)
+				  .closest("div.G2")
+				  .find("span.UPfPzb>div>a")
+				  .attr("href");
 
        $(this)
 	 .data('tags',tagInfo)
-	 .text("Tag")
 	 .next()
-	 .keydown(registerTag);
-     });
+	 .keydown(updateTag);
+
+       tagInfo.value = "";
+		 
+       });
      
      return this;
    };
