@@ -16,7 +16,7 @@ var server = {
     
     $("div.GKS0I", ctx)
     .parent()
-    .TB_addTag();
+    .TB_initTagUI();
     
     sendResponse({});
   }
