@@ -1,7 +1,7 @@
 chrome.browserAction.onClicked.addListener(function(tab){
   chrome.tabs.executeScript(
     tab.id, 
-    {file: "Jquery1.4.1/jquery.min.js" }
+    {file: "jquery-1.4.2.min.js" }
   );
 
   chrome.tabs.executeScript(
