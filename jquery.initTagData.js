@@ -1,35 +1,38 @@
 (function($){
    var name = "TB_initTagData";
 
-   var TagInfo = function(){
+   var TagInfo = function(permalink){
      this.data = {
-       permalink: "", 
+       permalink: permalink, 
        tags: []       
      };
      
      this.linked_elements = [];
+     
+     this.__defineSetter__("value", 
+       function(val){
+	 var self = this;
+	 self.data.tags = [];
+     
+	 val.split(',')
+            .map(function(tag){ return tag.trim(); })
+	    .filter(function(tag){ return tag != ""; })
+	    .uniq()
+	    .forEach(function(tag){ self.data.tags.push(tag); });
+     
+	 this.updateLinkedElements();
+	 this.register();
+       }
+     );
+     
+     this.__defineGetter__("value", 
+       function(){
+	 return this.data.tags.reduce(function(a, b){ return a == "" ? b : a + ", "+ b; }, "");
+       }
+     );
    };
    
    $.extend(TagInfo.prototype, {
-     // tags setter
-     setter: function(val){
-       var self = this;
-       self.data.tags = [];
-     
-       val.split(',')
-          .map(function(tag){ return tag.trim(); })
-	  .filter(function(tag){ return tag != ""; })
-	  .forEach(function(tag){ self.data.tags.push(tag); });
-     
-       this.updateLinkedElements();
-       this.register();
-     },
-     
-     // tags getter
-     getter: function(){
-       return this.data.tags.reduce(function(a, b){ return a == "" ? b : a + ", "+ b; }, "");
-     },
-	      
      register: function(){
        chrome.extension.sendRequest({
 	 name: "register",
@@ -37,57 +40,53 @@
        }, function(){});
      },
 
-     updateLinkedElements: function(){
+     updateLinkedElements: function(elm){
        var self = this;
        var modules = {
 	 div  : function(elm){ elm.text("Tags: " + self.value); },
 	 input: function(elm){ elm.attr("value", self.value); }
        };
+       var targets = elm ? [elm] : this.linked_elements;
        
-       this.linked_elements.forEach(function(elm){
+       targets.forEach(function(elm){
 	 modules[elm[0].tagName.toLowerCase()](elm);
        });
+     },
+	      
+     /**
+      * link(jQuery elm)
+      *   link the elm to tagInfo to update a value of elm according to updating of tagInfo
+      */
+     link: function(elm){
+       this.linked_elements.push(elm);
+       this.updateLinkedElements(elm);
      }
    });
    
-   
-   //
-   // inner methods
-   // 
-   var updateTag = function(evn){
-     var tags = $("input", $(this))[0];
-     var tagInfo = $(this).prev().data("tags");
-     
-     if(evn.keyCode == 13){
-       tagInfo.value = tags.value;
-     }
-   };
    
    //
    // definition of TB_initTagData
    //
    $.fn[name] = function(){
      this.each(function(){
-       var tagInfo = new TagInfo();
-       tagInfo.__defineSetter__("value", tagInfo.setter);
-       tagInfo.__defineGetter__("value", tagInfo.getter);
+       var permalink = $(this)
+			 .closest("div.G2")
+			 .find("span.UPfPzb>div>a")
+			 .attr("href");
 		 
-       tagInfo.linked_elements.push($(this));
-       tagInfo.linked_elements.push($(this).next().find("input"));
+       var tagInfo = new TagInfo(permalink);
+       var input = $(this).next().find("input")[0];
 		 
-       tagInfo.data.permalink = $(this)
-				  .closest("div.G2")
-				  .find("span.UPfPzb>div>a")
-				  .attr("href");
-
+       tagInfo.link($(this));
+       tagInfo.link($(input));
+		 
        $(this)
 	 .data('tags',tagInfo)
 	 .next()
-	 .keydown(updateTag);
-
-       tagInfo.value = "";
-		 
-       });
+	   .find("input")
+	   .blur(function(){ tagInfo.value = input.value; })
+	 .end();
+     });
      
      return this;
    };

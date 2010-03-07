@@ -6,6 +6,11 @@ chrome.browserAction.onClicked.addListener(function(tab){
 
   chrome.tabs.executeScript(
     tab.id, 
+    {file: "lib.js" }
+  );
+
+  chrome.tabs.executeScript(
+    tab.id, 
     {file: "jquery.initTagData.js" }
   );
 
