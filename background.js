@@ -38,8 +38,16 @@ chrome.extension.onRequest.addListener(
 //
 var server = {
   register: function(request, sender, sendResponse){
-    console.log(request.tagInfo);
-    localStorage.tagInfo = request.tagInfo;
+    var data = JSON.parse(request.tagInfo);
+    
+    localStorage.setItem(data.permalink, JSON.stringify(data.tags));
     sendResponse({});
+  },
+  
+  queryTags: function(request, sender, sendResponse){
+    var tags = localStorage.getItem(request.permalink);
+    tags = tags || "[]";
+    
+    sendResponse({tags: JSON.parse(tags)});
   }
 }

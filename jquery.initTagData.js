@@ -2,11 +2,22 @@
    var name = "TB_initTagData";
 
    var TagInfo = function(permalink){
+     var self = this;
+     
      this.data = {
        permalink: permalink, 
-       tags: []       
+       tags     : null
      };
-     
+
+     chrome.extension.sendRequest({
+       name     : "queryTags",
+       permalink: permalink
+     }, function(response){ 
+       debugger;
+       self.data.tags = response.tags; 
+       self.updateLinkedElements(); 
+     });
+
      this.linked_elements = [];
      
      this.__defineSetter__("value", 
@@ -35,20 +46,19 @@
    $.extend(TagInfo.prototype, {
      register: function(){
        chrome.extension.sendRequest({
-	 name: "register",
+	 name   : "register",
 	 tagInfo: JSON.stringify(this.data)
        }, function(){});
      },
 
-     updateLinkedElements: function(elm){
+     updateLinkedElements: function(){
        var self = this;
        var modules = {
 	 div  : function(elm){ elm.text("Tags: " + self.value); },
 	 input: function(elm){ elm.attr("value", self.value); }
        };
-       var targets = elm ? [elm] : this.linked_elements;
        
-       targets.forEach(function(elm){
+       this.linked_elements.forEach(function(elm){
 	 modules[elm[0].tagName.toLowerCase()](elm);
        });
      },
@@ -59,7 +69,6 @@
       */
      link: function(elm){
        this.linked_elements.push(elm);
-       this.updateLinkedElements(elm);
      }
    });
    
