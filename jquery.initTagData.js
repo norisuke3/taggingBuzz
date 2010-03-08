@@ -13,7 +13,6 @@
        name     : "queryTags",
        permalink: permalink
      }, function(response){ 
-       debugger;
        self.data.tags = response.tags; 
        self.updateLinkedElements(); 
      });
