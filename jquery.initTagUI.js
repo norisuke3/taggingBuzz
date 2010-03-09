@@ -7,27 +7,22 @@
    $.fn[name] = function(){
      this.each(function(){
        var self = this;
-       var toggle = function(evn){ 
-	 $(self).next().trigger("TB_toggle"); 
-       };
-       var focusToInput = function(evn){ 
-	 $(self).next().find("div:last").find("input").focus(); 
-       };
-		 
+       var inputDiv = null;
+       var divTag = null;
+		   
        var focusToTag = function(evn){
-	 $(self).next().find("div:last").find("input").triggerHandler("blur"); 
+	 divTag.show();
+	 inputDiv.hide();
        };
 
        $(this)
        .after("<td>")
        .next()
-       .bind("TB_toggle", function(){ $(this).find("div").toggle(); })
 		 
        .append("<div>")
 	 .find("div")
 	 .addClass("mD TB_tag")
-	 .click(toggle)
-	 .click(focusToInput)
+	 .click(function(evn){divTag.hide();inputDiv.show().find("input").focus();})
        .end()
 		 
        .append("<div>")
@@ -37,13 +32,16 @@
 	 .bind("keydown", onKeyDown)
 	 .bind("keyEnter", focusToTag)
 	   .find("input")
-	   .blur(toggle)
+	   .blur(focusToTag)
 	 .end()
 	 .hide()
        .end()
 		 
        .find("div.TB_tag")
 	 .TB_initTagData();
+		 
+       divTag = $(this).next().find("div:first");
+       inputDiv = $(this).next().find("div:last");
      });
      
      return this;
@@ -53,7 +51,10 @@
    // Event handler
    //
    var onKeyDown = function(evn){
-     if(evn.keyCode == 13){ $(this).trigger('keyEnter'); }
+     if(evn.keyCode == 13){ 
+       evn.stopPropagation(); 
+       $(this).trigger('keyEnter'); 
+     }
    };
    
  })(jQuery);
