@@ -6,3 +6,15 @@ Array.prototype.uniq=function(){
     }
     ,[]);
 };
+
+jQuery.fn.findAll = function(func){
+  var result = null;
+  
+  this.each(function(){
+    if (func($(this))){
+      result = result ? result.add($(this)) : $(this);
+    }
+  });
+  
+  return result || $([]);
+};

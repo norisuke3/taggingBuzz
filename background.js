@@ -1,28 +1,3 @@
-chrome.browserAction.onClicked.addListener(function(tab){
-  chrome.tabs.executeScript(
-    tab.id, 
-    {file: "jquery-1.4.2.min.js" }
-  );
-
-  chrome.tabs.executeScript(
-    tab.id, 
-    {file: "lib.js" }
-  );
-
-  chrome.tabs.executeScript(
-    tab.id, 
-    {file: "jquery.initTagData.js" }
-  );
-
-  chrome.tabs.executeScript(
-    tab.id, 
-    {file: "jquery.initTagUI.js" },
-    function(){
-      chrome.tabs.sendRequest(tab.id, { name: "test" });
-    }
-  );
-});
-
 //
 // onRequest handler
 //
@@ -37,6 +12,22 @@ chrome.extension.onRequest.addListener(
 // server object
 //
 var server = {
+  initialize: function(request, sender, sendResponse){
+    var tab = sender.tab;
+    var files = [
+      "jquery-1.4.2.min.js", 
+      "lib.js", 
+      "jquery.initTagData.js", 
+      "jquery.initTagUI.js"
+    ];
+    
+    files.forEach(function(file){
+      chrome.tabs.executeScript( tab.id, { file: file } );
+    });
+    
+    sendResponse({});
+  },
+  
   register: function(request, sender, sendResponse){
     var data = JSON.parse(request.tagInfo);
     

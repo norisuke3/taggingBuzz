@@ -5,7 +5,9 @@
    // definition of TB_initTagUI
    //
    $.fn[name] = function(){
-     this.each(function(){
+     this.findAll(function(elm){
+       return !elm.next().find("div").hasClass("TB_tag");
+     }).each(function(){
        var self = this;
        var inputDiv = null;
        var divTag = null;
