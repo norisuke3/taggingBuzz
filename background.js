@@ -1,3 +1,5 @@
+var self = this;
+
 //
 // onRequest handler
 //
@@ -12,6 +14,8 @@ chrome.extension.onRequest.addListener(
 // server object
 //
 var server = {
+  profileId: null,
+  
   initialize: function(request, sender, sendResponse){
     var tab = sender.tab;
     var files = [
@@ -25,12 +29,18 @@ var server = {
       chrome.tabs.executeScript( tab.id, { file: file } );
     });
     
-    sendResponse({});
+    // initialize profileId
+    $.get("http://www.google.com/profiles/me",
+       function(data){
+	self.server.profileId = $(data).find(".proflink:first").attr("oid");
+	 
+	sendResponse({});
+    });
   },
   
   register: function(request, sender, sendResponse){
     var data = JSON.parse(request.tagInfo);
-    
+
     // register tags with a permalink as a key
     localStorage.setItem(data.permalink, JSON.stringify(data.tags));
     

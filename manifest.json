@@ -17,5 +17,9 @@
     "default_icon": "buzz_48.png",
     "popup": "popup.html"
   },
-  "permissions": ["tabs", "https://mail.google.com/mail*"]
+  "permissions": [
+    "tabs", 
+    "https://mail.google.com/mail*",
+    "http://www.google.com/"
+  ]
 }
