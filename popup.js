@@ -4,25 +4,28 @@ $(function(){
   tags.forEach(function(tag){
     var links = JSON.parse(localStorage.getItem(tag));
       
-    var content = jQuery("<content>");
     links.forEach(function(link){
-      content
-      .append("<span>")
-	.find("span:last")
-	.text(tag + ": ")
-	.append("<a>")
-	  .find("a")
-	  .attr("href", link)
-	  .attr("target", "_blank")
-	  .text(tag + ": " + link.substr(0, 10))
+      $("div#top")
+	.append("<div>")
+	  .find("div:last")
+	  .addClass("link")
+	  .text(tag + ": ")
+	  .append("<a>")
+	    .find("a")
+	    .attr("href", link)
+	    .attr("target", "_blank")
+	    .text("link")
+	  .end()
 	.end()
-	.append("<br>");
+	.append("<div>")
+	.find("div:last")
+	.addClass("entry")
+	.load(link + " div[class=g-section]", function(){
+	  $(this)
+	    .find("a")
+	    .attr("target", "_blank");
+	});
     });
-		 
-    $("div#top")
-    .append("<div class=" + tag + ">")
-      .find("div." + tag)
-      .append(content.children());
   });
 });
 
