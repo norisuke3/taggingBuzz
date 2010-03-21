@@ -62,9 +62,11 @@ jQuery.fn.complementURL = function(options){
 }
 
 
-jQuery.fn.attach = function(elmExp){
+jQuery.fn.attach = function(elmExp, attrs){
   var tagInfo;
   var tag;
+  var strAttr = "";
+  attrs = attrs || [];
   
   if( elmExp.indexOf("#") != -1 ){
     tag = elmExp.split("#");
@@ -75,10 +77,15 @@ jQuery.fn.attach = function(elmExp){
   } else {
     tagInfo = { tag: elmExp };
   }
+  
+  attrs.forEach(function(attr){
+    strAttr += " " + attr.name + "='" + attr.value + "'";
+  });
 
   return this.append(
     "<" + tagInfo.tag + ( tagInfo.id ? " id='" + tagInfo.id + "'" : "") + 
                         ( tagInfo.classes ? " class='" + tagInfo.classes + "'" : "") + 
+			strAttr +
     ">"
   ).find(tagInfo.tag + ":last");
 }

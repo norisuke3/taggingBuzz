@@ -1,12 +1,26 @@
 $(function(){
   var tags = JSON.parse(localStorage.tag_list);
 
-    $("div#top")
-    .attach("div.search")   // div.search
-      .text("Tag: ")
-      .attach("input type='text'")      // input
-    .end();
-    
+  $("div#top")
+  .attach("div.search")   // div.search
+    .text("Tag: ")
+    .attach("input", [{ name: "type", value: "text" }])      // input
+    .autocompleteArray(tags ,{
+      autoFill: true,
+      delay: 40
+    })
+    .focus()
+    .keydown(function(evn){
+      if(evn.keyCode == 13){ 
+	populate_items([$("div.search input")[0].value]);
+      }
+    })
+  .end();
+});
+
+function populate_items(tags){
+  $("div.entry").remove();
+  
   tags.forEach(function(tag){
     var links = JSON.parse(localStorage.getItem(tag));
       
@@ -64,5 +78,4 @@ $(function(){
       });
     });
   });
-});
-
+}
