@@ -10,7 +10,7 @@
      };
 
      chrome.extension.sendRequest({
-       name     : "queryTags",
+       name     : "query_tags",
        permalink: permalink
      }, function(response){ 
        self.data.tags = response.tags; 
@@ -45,7 +45,7 @@
    $.extend(TagInfo.prototype, {
      register: function(){
        chrome.extension.sendRequest({
-	 name   : "register",
+	 name   : "register_tags",
 	 tagInfo: JSON.stringify(this.data)
        }, function(){});
      },

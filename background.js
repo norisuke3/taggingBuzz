@@ -39,7 +39,7 @@ var server = {
     });
   },
   
-  register: function(request, sender, sendResponse){
+  register_tags: function(request, sender, sendResponse){
     var data = JSON.parse(request.tagInfo);
 
     // register tags with a permalink as a key
@@ -66,7 +66,7 @@ var server = {
     sendResponse({});
   },
   
-  queryTags: function(request, sender, sendResponse){
+  query_tags: function(request, sender, sendResponse){
     var tags = localStorage.getItem(request.permalink);
     tags = tags || "[]";
     
