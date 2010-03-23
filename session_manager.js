@@ -12,10 +12,16 @@ chrome.extension.sendRequest({
   var obj = {};
   obj[session_key] = session;
 
+  // register the session cookie
   chrome.extension.sendRequest({
     name   : "register_session" ,
     session: JSON.stringify(obj)
   }, function(){});
+  
+  // initialize profile id
+  chrome.extension.sendRequest({
+    name   : "init_profile_id"
+  }, function(res){});
 });
 
 

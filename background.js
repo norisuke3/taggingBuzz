@@ -1,5 +1,6 @@
 var self = this;
 var session_key = "_tagging_buzz_session";
+var profile_url = "http://www.google.com/profiles/me";
 
 //
 // onRequest handler
@@ -16,6 +17,7 @@ chrome.extension.onRequest.addListener(
 //
 var server = {
   profileId: null,
+  sessionCookie: null,
   
   initialize: function(request, sender, sendResponse){
     var tab = sender.tab;
@@ -30,12 +32,15 @@ var server = {
       chrome.tabs.executeScript( tab.id, { file: file } );
     });
     
-    // initialize profileId
-    $.get("http://www.google.com/profiles/me",
+    sendResponse({});
+  },
+  
+  init_profile_id : function(request, sender, sendResponse){
+    $.get(profile_url,
        function(data){
 	self.server.profileId = $(data).find(".proflink:first").attr("oid");
 	 
-	sendResponse({});
+	sendResponse({ profileId : self.server.profileId });
     });
   },
   
@@ -78,7 +83,7 @@ var server = {
   },
   
   register_session: function(request, sender, sendResponse){
-    localStorage.session = request.session;
+    self.server.sessionCookie = JSON.parse(request.session);
     
     sendResponse({});
   }
