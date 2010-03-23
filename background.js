@@ -1,4 +1,5 @@
 var self = this;
+var session_key = "_tagging_buzz_session";
 
 //
 // onRequest handler
@@ -70,5 +71,15 @@ var server = {
     tags = tags || "[]";
     
     sendResponse({tags: JSON.parse(tags)});
+  },
+  
+  get_session_key: function(request, sender, sendResponse){
+    sendResponse({session_key: session_key});
+  },
+  
+  register_session: function(request, sender, sendResponse){
+    localStorage.session = request.session;
+    
+    sendResponse({});
   }
 }
