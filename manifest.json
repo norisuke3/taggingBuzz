@@ -25,6 +25,7 @@
   "permissions": [
     "tabs", 
     "https://mail.google.com/mail*",
-    "http://www.google.com/"
+    "http://www.google.com/",
+    "http://localhost/*"
   ]
 }
