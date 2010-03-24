@@ -15,12 +15,13 @@ chrome.extension.onRequest.addListener(
 // server object
 //
 var server = {
-  profileId: null,
-  
+  profileId : null,
+  auth_token: null,
+
   initialize: function(request, sender, sendResponse){
     var tab = sender.tab;
     var files = [
-      "jquery-1.4.2.min.js", 
+      "jquery.min.js", 
       "lib.js", 
       "jquery.initTagData.js", 
       "jquery.initTagUI.js"
@@ -34,6 +35,8 @@ var server = {
   },
   
   init_profile_id : function(request, sender, sendResponse){
+    self.server.auth_token = request.auth_token;
+      
     $.get(profile_url,
        function(data){
 	self.server.profileId = $(data).find(".proflink:first").attr("oid");
