@@ -38,7 +38,7 @@ var server = {
        function(data){
 	self.server.profileId = $(data).find(".proflink:first").attr("oid");
 	 
-	 sendResponse({ gid : self.server.profileId });
+	sendResponse({ gid : self.server.profileId });
     });
   },
   
