@@ -89,3 +89,80 @@ jQuery.fn.attach = function(elmExp, attrs){
     ">"
   ).find(tagInfo.tag + ":last");
 }
+
+//
+// helper function 
+//
+// localStorage.push(String key, String value, Object option)
+//  function to push 'value' to an array assuming that an object keied with 'key' is 
+//  a JSON string of an array. 
+// 
+// default value:
+//   option : { uniq => false }
+//
+localStorage.__proto__.push = function(key, value, option){
+  var array = null;
+  var setting = $.extend({
+    uniq : false
+  }, option);
+    
+  var obj = localStorage.getItem(key);
+    
+  if (obj) {
+    array = JSON.parse(obj).concat(value);
+    if(setting.uniq){ array = array.uniq(); }
+      
+  } else {
+    array = [value];
+  }
+    
+  localStorage.setItem(key, JSON.stringify(array));
+}
+
+//
+// helper function
+// 
+// localStorage.items(String key, Object option)
+//   returns a value associated with the 'key' in the localStorage
+//
+// option : { type => ("String" as default | "Array") }
+//
+localStorage.__proto__.items = function(key, option){
+  var setting = $.extend({
+    type: "String"
+  }, option);
+  
+  var result = localStorage.getItem(key);
+
+  if(setting.type == "Array"){
+    result = JSON.parse(result);
+  }
+  
+  return result;
+}
+
+//
+// Class BuzzId
+//   for a permalink of buzz article.
+//   holding the permalink as google user ID and buzz ID
+//   recognizing the permalink as:
+// 
+//   http://www.google.com/buzz/{gId}/{buzzId}/
+//
+var BuzzURL = function(permalink){
+  this.gId = null;
+  this.buzzId = null;
+  
+  this.setURL(permalink);
+  
+  this.__defineSetter__("url", function(value){ this.setURL(value); });
+  this.__defineGetter__("url",
+    function(){ return "http://www.google.com/buzz/" + this.gId + "/" + this.buzzId + "/"; }
+  );
+};
+
+BuzzURL.prototype.setURL = function(value){
+  var match = value.match(/buzz\/(\d+)\/(\w+)/i);
+  this.gId = match[1];
+  this.buzzId = match[2];
+}
