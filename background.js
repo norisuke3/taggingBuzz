@@ -1,5 +1,6 @@
 var self = this;
 var profile_url = "http://www.google.com/profiles/me";
+var server_url = "http://localhost:3000/";
 
 //
 // onRequest handler
@@ -48,26 +49,22 @@ var server = {
   register_tags: function(request, sender, sendResponse){
     var data = JSON.parse(request.tagInfo);
 
-    // register tags with a permalink as a key
-    localStorage.setItem(data.permalink, JSON.stringify(data.tags));
-    
-    // register a permalink with a tag as a key
-    data.tags.forEach(function(tag){
-      var plinks = localStorage.getItem(tag);
-		     
-      plinks = plinks ? JSON.stringify(JSON.parse(plinks).concat(data.permalink).uniq())
-		      : JSON.stringify([data.permalink]);
-			
-      localStorage.setItem(tag, plinks);
+    localStorage.setItem(data.permalink, data.tags);                // key => permalink,  value => tag
+
+    data.tags.split(', ').forEach(function(tag){
+      // put a prefix '_' for every tag for not conflicting with localStorage prototype functions
+      localStorage.push('_' + tag, data.permalink, { uniq: true }); // key => tag,        value => permalink
+      localStorage.push('tag_list', tag, { uniq: true });           // key => 'tag_list', value => tag
     });
     
-    // add the tags to a tag_list
-    var tag_list = localStorage.getItem("tag_list");
-    
-    tag_list = tag_list || "[]";
-    tag_list = JSON.parse(tag_list).concat(data.tags).uniq();
-    
-    localStorage.setItem("tag_list", JSON.stringify(tag_list));
+    // add the tags to the server
+    $.post(server_url + "tags/register", {
+      buzz_id            : data.permalink,
+      tag_list           : data.tags,
+      authenticity_token : self.server.auth_token
+    }, function(res){
+      console.log(res);
+    });
     
     sendResponse({});
   },

@@ -6,7 +6,7 @@
      
      this.data = {
        permalink: permalink, 
-       tags     : null
+       tags     : null          // comma separated string value
      };
 
      chrome.extension.sendRequest({
@@ -22,13 +22,12 @@
      this.__defineSetter__("value", 
        function(val){
 	 var self = this;
-	 self.data.tags = [];
      
-	 val.split(',')
+	 self.data.tags = val.split(',')
             .map(function(tag){ return tag.trim(); })
 	    .filter(function(tag){ return tag != ""; })
 	    .uniq()
-	    .forEach(function(tag){ self.data.tags.push(tag); });
+	    .join(", ");
      
 	 this.updateLinkedElements();
 	 this.register();
@@ -36,9 +35,7 @@
      );
      
      this.__defineGetter__("value", 
-       function(){
-	 return this.data.tags.reduce(function(a, b){ return a == "" ? b : a + ", "+ b; }, "");
-       }
+       function(){ return this.data.tags; }
      );
    };
    
@@ -50,13 +47,15 @@
        }, function(){});
      },
 
+     // calling a function in the "modules" object, defined below, depending on the tag name
+     // to set a value to those DOM element.
      updateLinkedElements: function(){
        var self = this;
        var modules = {
 	 div  : function(elm){ elm.text("Tags: " + self.value); },
 	 input: function(elm){ elm.attr("value", self.value); }
        };
-       
+
        this.linked_elements.forEach(function(elm){
 	 modules[elm[0].tagName.toLowerCase()](elm);
        });
