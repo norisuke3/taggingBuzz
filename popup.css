@@ -1,3 +1,7 @@
+*:not(a) {
+    color: black;
+}
+
 div#top {
     width: 400;
     padding-right: 15px;
