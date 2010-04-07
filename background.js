@@ -49,17 +49,18 @@ var server = {
   register_tags: function(request, sender, sendResponse){
     var data = JSON.parse(request.tagInfo);
 
-    localStorage.setItem(data.permalink, data.tags);                // key => permalink,  value => tag
+    localStorage.setItem(data.gId + "/" + data.buzzId, data.tags);                // key => permalink,  value => tag
 
     data.tags.split(', ').forEach(function(tag){
       // put a prefix '_' for every tag for not conflicting with localStorage prototype functions
-      localStorage.push('_' + tag, data.permalink, { uniq: true }); // key => tag,        value => permalink
-      localStorage.push('tag_list', tag, { uniq: true });           // key => 'tag_list', value => tag
+      localStorage.push('_' + tag, data.gId + "/" + data.buzzId, { uniq: true }); // key => tag,        value => permalink
+      localStorage.push('tag_list', tag, { uniq: true });                         // key => 'tag_list', value => tag
     });
     
     // add the tags to the server
     $.post(server_url + "tags/register", {
-      buzz_id            : data.permalink,
+      gId                : data.gId,
+      buzzId             : data.buzzId,
       tag_list           : data.tags,
       authenticity_token : self.server.auth_token
     }, function(res){
@@ -70,9 +71,7 @@ var server = {
   },
   
   query_tags: function(request, sender, sendResponse){
-    var tags = localStorage.getItem(request.permalink);
-    tags = tags || "[]";
-    
-    sendResponse({tags: JSON.parse(tags)});
+    var tags = localStorage.getItem(request.gId + "/" + request.buzzId);
+    sendResponse({tags: tags || ""});
   }
 };

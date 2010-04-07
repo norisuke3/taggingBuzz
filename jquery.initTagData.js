@@ -3,22 +3,25 @@
 
    var TagInfo = function(permalink){
      var self = this;
+     var buzzUrl = new BuzzURL(permalink);
+     this.linked_elements = [];
      
      this.data = {
-       permalink: permalink, 
+       gId      : buzzUrl.gId,
+       buzzId   : buzzUrl.buzzId,
        tags     : null          // comma separated string value
      };
 
      chrome.extension.sendRequest({
        name     : "query_tags",
-       permalink: permalink
+       gId      : buzzUrl.gId,
+       buzzId   : buzzUrl.buzzId
      }, function(response){ 
        self.data.tags = response.tags; 
        self.updateLinkedElements(); 
      });
-
-     this.linked_elements = [];
-     
+       
+     // setter for tags
      this.__defineSetter__("value", 
        function(val){
 	 var self = this;
@@ -34,6 +37,7 @@
        }
      );
      
+     // getter for tags
      this.__defineGetter__("value", 
        function(){ return this.data.tags; }
      );

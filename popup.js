@@ -22,9 +22,12 @@ function populate_items(tags){
   $("div.entry").remove();
   
   tags.forEach(function(tag){
-    var links = JSON.parse(localStorage.getItem(tag));
+    var links = localStorage.items("_" + tag, { type : "Array" });
       
-    links.forEach(function(link){
+    links.map(function(link){
+      return "http://www.google.com/buzz/" + link;	     
+    }).forEach(function(link){
+
       $.get(link, function(data){
 	var gSection = $(data).find("div.g-section");
 	      
