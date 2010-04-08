@@ -1,12 +1,3 @@
-//
-// onRequest handler
-//
-chrome.extension.onRequest.addListener(
-  function(request, sender, sendResponse){
-    server[request.name](request, sender, sendResponse);
-  }
-);
-
 chrome.extension.sendRequest({
   name   : "initialize" 
 }, function(){
