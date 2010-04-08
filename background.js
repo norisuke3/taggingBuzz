@@ -90,7 +90,7 @@ var init_profile_id = function(){
 
 var activate_session = function(){
   $.post(
-    "http://localhost:3000/session/activate_session", {
+    "http://localhost:3000/session/activate", {
       gid               : server.profileId,
       authenticity_token: server.auth_token 
     }, function(data){}
