@@ -35,15 +35,11 @@ var server = {
     sendResponse({});
   },
   
-  init_profile_id : function(request, sender, sendResponse){
-    self.server.auth_token = request.auth_token;
+  initialize_session: function(request, sender, sendResponse){
+    set_auth_token(request.auth_token);
+    init_profile_id();
     
-    $.get(profile_url,
-       function(data){
-	self.server.profileId = $(data).find(".proflink:first").attr("oid");
-	 
-	sendResponse({ gid : self.server.profileId });
-    });
+    sendResponse({});
   },
   
   register_tags: function(request, sender, sendResponse){
@@ -74,4 +70,29 @@ var server = {
     var tags = localStorage.getItem(request.gId + "/" + request.buzzId);
     sendResponse({tags: tags || ""});
   }
+};
+
+
+//
+// helper functions for session management.
+//
+var set_auth_token = function(token){
+  server.auth_token = token;
+};
+
+var init_profile_id = function(){
+  $.get(profile_url, function(data){
+    server.profileId = $(data).find(".proflink:first").attr("oid");
+
+    activate_session();
+  });
+};
+
+var activate_session = function(){
+  $.post(
+    "http://localhost:3000/session/activate_session", {
+      gid               : server.profileId,
+      authenticity_token: server.auth_token 
+    }, function(data){}
+  );
 };

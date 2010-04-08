@@ -14,7 +14,7 @@
   },
   {
     "matches": ["http://localhost/session/create*"],
-    "js": ["jquery.min.js", "session_manager.js"],
+    "js": ["jquery.min.js", "session_create.js"],
     "all_frame": false
   }    
   ],
