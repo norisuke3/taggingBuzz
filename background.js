@@ -1,6 +1,7 @@
 var self = this;
 var profile_url = "http://www.google.com/profiles/me";
 var server_url = "http://localhost:3000/";
+var sync_url = "http://localhost:3000/tags/snapshot";
 
 //
 // onRequest handler
@@ -69,6 +70,11 @@ var server = {
   query_tags: function(request, sender, sendResponse){
     var tags = localStorage.getItem(request.gId + "/" + request.buzzId);
     sendResponse({tags: tags || ""});
+  },
+  
+  sync: function(request, sender, sendResponse){
+    synchronize();
+    sendResponse({});
   }
 };
 
@@ -93,6 +99,40 @@ var activate_session = function(){
     "http://localhost:3000/session/activate", {
       profile_id        : server.profileId,
       authenticity_token: server.auth_token 
-    }, function(data){}
+    }, function(data){
+      synchronize();
+    }
   );
+};
+
+
+//
+// Synchronize the localStorage with the server database
+//
+var synchronize = function(callback){
+  localStorage.clear();
+  
+  $.get(sync_url, function(data){
+    var result = ( data != "failed" );
+	  
+    if (result) {
+      var snapshot = JSON.parse(data);
+      var buffer = new Object();
+      
+      snapshot.forEach(function(record){
+        localStorage.push("tag_list", record.tag);
+        record.paths.forEach(function(path){
+  	localStorage.push("_" + record.tag, path);
+  	buffer[path] = buffer[path] ? buffer[path].concat(record.tag)
+  			            : [record.tag];
+        });
+      });
+      
+      for(var path in buffer){
+        localStorage.setItem(path, buffer[path].join(", "));
+      }
+    }
+    
+    if(callback) callback(result);
+  });
 };

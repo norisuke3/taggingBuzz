@@ -1,22 +1,43 @@
 $(function(){
-  var tags = JSON.parse(localStorage.tag_list);
+  var tags = JSON.parse(localStorage.tag_list || "[]");
 
   $("div#top")
-  .attach("div.search")   // div.search
-    .text("Tag: ")
-    .attach("input", [{ name: "type", value: "text" }])      // input
-    .autocompleteArray(tags ,{
-      autoFill: true,
-      delay: 40
-    })
-    .focus()
-    .keydown(function(evn){
-      if(evn.keyCode == 13){ 
-	populate_items([$("div.search input")[0].value]);
-      }
-    })
+  .attach("div#header")
+    .attach("div.sync")
+      .append("<a>").find("a")
+        .attr("href", "")
+        .text("Sync")
+	.click(sync_tag)
+      .end()
+    .end()
+    .attach("div.search")   // div.search
+      .text("Tag: ")
+      .attach("input", [{ name: "type", value: "text" }])      // input
+      .autocompleteArray(tags ,{
+        autoFill: true,
+        delay: 40
+      })
+      .focus()
+      .keydown(function(evn){
+        if(evn.keyCode == 13){ 
+  	populate_items([$("div.search input")[0].value]);
+        }
+      })
+    .end()
   .end();
 });
+
+function sync_tag(){
+  var background = chrome.extension.getBackgroundPage();
+  var login = background.server_url + "session/new";
+  
+  background.synchronize(function(success){
+    if(!success) {
+      chrome.tabs.create({ url: login });
+    } else {
+    }
+  });
+}
 
 function populate_items(tags){
   $("div.entry").remove();

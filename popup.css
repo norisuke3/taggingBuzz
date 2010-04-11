@@ -3,11 +3,20 @@
 }
 
 div#top {
+}
+
+div#header {
     width: 400;
     padding-right: 15px;
+    display: -webkit-box; 
+}
+
+div.sync {
+    width: 100px;
 }
 
 div.search {
+    width: 300px;
     text-align: right;
     margin-bottom: 10px;
 }
