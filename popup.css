@@ -5,6 +5,13 @@
 div#top {
 }
 
+div#links {
+    font-size: 12px;
+    text-align: right;
+    margin-right: 20px;
+    margin-bottom: 15px;    
+}
+
 div#header {
     width: 400;
     padding-right: 15px;

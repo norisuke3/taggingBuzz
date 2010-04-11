@@ -1,15 +1,24 @@
 $(function(){
   var tags = JSON.parse(localStorage.tag_list || "[]");
+  var background = chrome.extension.getBackgroundPage();
+  var login_status = background.server.loggedIn;
 
   $("div#top")
-  .attach("div#header")
-    .attach("div.sync")
-      .append("<a>").find("a")
-        .attr("href", "")
-        .text("Sync")
-	.click(sync_tag)
-      .end()
+  .attach("div#links")
+    .append("<a id='login'>").find("a:last")
+      .attr("href", "")
+      .text("Login")
+      .toggle(!login_status)
+      .click(open_login_page)
     .end()
+    .append("<a id='logout'>").find("a:last")
+      .attr("href", "")
+      .text("Logout")
+      .toggle(login_status)
+      .click(logout)
+    .end()
+  .end()
+  .attach("div#header")
     .attach("div.search")   // div.search
       .text("Tag: ")
       .attach("input", [{ name: "type", value: "text" }])      // input
@@ -27,16 +36,21 @@ $(function(){
   .end();
 });
 
-function sync_tag(){
+function open_login_page(){
   var background = chrome.extension.getBackgroundPage();
   var login = background.server_url + "session/new";
+
+  chrome.tabs.create({ url: login });
+}
+
+function logout(){
+  var background = chrome.extension.getBackgroundPage();
   
-  background.synchronize(function(success){
-    if(!success) {
-      chrome.tabs.create({ url: login });
-    } else {
-    }
-  });
+  $("a#logout").fadeOut(300, function(){
+    $("a#login").fadeIn(300);
+  }); 
+  
+  background.logout();
 }
 
 function populate_items(tags){

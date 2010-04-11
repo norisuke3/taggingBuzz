@@ -1,7 +1,9 @@
 var self = this;
 var profile_url = "http://www.google.com/profiles/me";
 var server_url = "http://localhost:3000/";
-var sync_url = "http://localhost:3000/tags/snapshot";
+var sync_url     = server_url + "tags/snapshot";
+var activate_url = server_url + "session/activate";
+var logout_url   = server_url + "session/logout";
 
 //
 // onRequest handler
@@ -19,6 +21,7 @@ chrome.extension.onRequest.addListener(
 var server = {
   profileId : null,
   auth_token: null,
+  loggedIn  : false,
 
   initialize: function(request, sender, sendResponse){
     var tab = sender.tab;
@@ -96,11 +99,25 @@ var init_profile_id = function(){
 
 var activate_session = function(){
   $.post(
-    "http://localhost:3000/session/activate", {
+    activate_url, {
       profile_id        : server.profileId,
       authenticity_token: server.auth_token 
     }, function(data){
+      server.loggedIn = true;
       synchronize();
+    }
+  );
+};
+
+//
+// helper function to loging out from taggingBuzz server
+//
+var logout = function(){
+  $.post(
+    logout_url, {
+      authenticity_token: server.auth_token 
+    }, function(){
+      server.loggedIn = false;
     }
   );
 };
