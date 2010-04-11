@@ -135,7 +135,7 @@ localStorage.__proto__.items = function(key, option){
   var result = localStorage.getItem(key);
 
   if(setting.type == "Array"){
-    result = JSON.parse(result);
+    result = JSON.parse(result || "[]");
   }
   
   return result;
