@@ -101,23 +101,18 @@ jQuery.fn.attach = function(elmExp, attrs){
 //   option : { uniq => false }
 //
 localStorage.__proto__.push = function(key, value, option){
-  var array = null;
   var setting = $.extend({
     uniq : false
   }, option);
-    
-  var obj = localStorage.getItem(key);
-    
-  if (obj) {
-    array = JSON.parse(obj).concat(value);
-    if(setting.uniq){ array = array.uniq(); }
-      
-  } else {
-    array = [value];
-  }
-    
+
+  var array = localStorage
+		.items(key, { type: "Array" })
+		.concat(value);
+  
+  if(setting.uniq){ array = array.uniq(); }
+  
   localStorage.setItem(key, JSON.stringify(array));
-}
+};
 
 //
 // helper function
