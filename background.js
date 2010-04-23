@@ -4,6 +4,7 @@ var server_url = "http://localhost:3000/";
 var sync_url     = server_url + "tags/snapshot";
 var activate_url = server_url + "session/activate";
 var logout_url   = server_url + "session/logout";
+var register_url = server_url + "tags/register";
 
 //
 // onRequest handler
@@ -56,28 +57,27 @@ var server = {
       localStorage.push('_' + tag, data.gId + "/" + data.buzzId, { uniq: true }); // key => tag,        value => permalink
       localStorage.push('tag_list', tag, { uniq: true });                         // key => 'tag_list', value => tag
     });
-    
-    // add the tags to the server
-    $.post(server_url + "tags/register", {
-      gId                : data.gId,
-      buzzId             : data.buzzId,
-      tag_list           : data.tags,
-      authenticity_token : self.server.auth_token
-    }, function(res){
-      console.log(res);
-    });
-    
+
+    // register tags to either the server or the local sync buffer
+    // depending on if it's logged in or not.
+    if(self.server.loggedIn){
+      $.post(register_url,
+        $.extend(
+	  { tagInfos : [data] }, 
+	  { authenticity_token : self.server.auth_token }
+	), 
+	function(){}
+      );
+    } else {
+      localStorage.push('sync_buffer', data);
+    }
+
     sendResponse({});
   },
   
   query_tags: function(request, sender, sendResponse){
     var tags = localStorage.getItem(request.gId + "/" + request.buzzId);
     sendResponse({tags: tags || ""});
-  },
-  
-  sync: function(request, sender, sendResponse){
-    synchronize();
-    sendResponse({});
   }
 };
 
@@ -127,29 +127,37 @@ var logout = function(){
 // Synchronize the localStorage with the server database
 //
 var synchronize = function(callback){
-  localStorage.clear();
-  
-  $.get(sync_url, function(data){
-    var result = ( data != "failed" );
-	  
-    if (result) {
-      var snapshot = JSON.parse(data);
-      var buffer = new Object();
+  var sync_buffer = { tagInfos: localStorage.items("sync_buffer", {type: "Array"}) };
+
+  $.post(
+    register_url,
+    $.extend(sync_buffer, { authenticity_token : self.server.auth_token }),
+    function(){  // call back function of $.post()
+      localStorage.clear();
       
-      snapshot.forEach(function(record){
-        localStorage.push("tag_list", record.tag);
-        record.paths.forEach(function(path){
-  	localStorage.push("_" + record.tag, path);
-  	buffer[path] = buffer[path] ? buffer[path].concat(record.tag)
-  			            : [record.tag];
-        });
+      $.get(sync_url, function(data){
+        var result = ( data != "failed" );
+    	  
+        if (result) {
+          var snapshot = JSON.parse(data);
+          var buffer = new Object();
+          
+          snapshot.forEach(function(record){
+            localStorage.push("tag_list", record.tag);
+            record.paths.forEach(function(path){
+      	      localStorage.push("_" + record.tag, path);
+      	      buffer[path] = buffer[path] ? buffer[path].concat(record.tag)
+      				          : [record.tag];
+            });
+          });
+          
+          for(var path in buffer){
+            localStorage.setItem(path, buffer[path].join(", "));
+          }
+        }
+        
+        if(callback) callback(result);
       });
-      
-      for(var path in buffer){
-        localStorage.setItem(path, buffer[path].join(", "));
-      }
     }
-    
-    if(callback) callback(result);
-  });
+  );
 };
