@@ -82,7 +82,7 @@
      this.each(function(){
        var permalink = $(this)
 			 .closest("div.G2")
-			 .find("span.UPfPzb>div>a")
+			 .find("span.Ye>div>a")
 			 .attr("href");
 		 
        var tagInfo = new TagInfo(permalink);
