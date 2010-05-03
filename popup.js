@@ -33,6 +33,7 @@ $(function(){
         }
       })
     .end()
+    .toggle(login_status)
   .end();
 });
 
@@ -48,7 +49,9 @@ function logout(){
   
   $("a#logout").fadeOut(300, function(){
     $("a#login").fadeIn(300);
-  }); 
+  });
+  
+  $("div.search").fadeOut(300);
   
   background.logout();
 }
