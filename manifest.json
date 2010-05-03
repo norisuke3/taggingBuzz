@@ -13,7 +13,7 @@
     "all_frame": true
   },
   {
-    "matches": ["http://localhost/session/create*"],
+    "matches": ["http://taggingbuzz.com/session/create*"],
     "js": ["jquery.min.js", "session_create.js"],
     "all_frame": false
   }    
@@ -26,6 +26,6 @@
     "tabs", 
     "https://mail.google.com/mail*",
     "http://www.google.com/",
-    "http://localhost/*"
+    "http://taggingbuzz.com/*"
   ]
 }

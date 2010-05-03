@@ -1,6 +1,6 @@
 var self = this;
 var profile_url = "http://www.google.com/profiles/me";
-var server_url = "http://localhost:3000/";
+var server_url = "http://taggingbuzz.com/";
 var sync_url     = server_url + "tags/snapshot";
 var activate_url = server_url + "session/activate";
 var logout_url   = server_url + "session/logout";
