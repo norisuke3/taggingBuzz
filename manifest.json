@@ -14,7 +14,7 @@
   },
   {
     "matches": ["http://taggingbuzz.com/session/create*"],
-    "js": ["jquery.min.js", "session_create.js"],
+    "js": ["jquery.min.js", "jquery.timer.js", "session_create.js"],
     "all_frame": false
   }    
   ],

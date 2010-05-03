@@ -78,6 +78,10 @@ var server = {
   query_tags: function(request, sender, sendResponse){
     var tags = localStorage.getItem(request.gId + "/" + request.buzzId);
     sendResponse({tags: tags || ""});
+  },
+  
+  close_tab: function(request, sender, sendResponse){
+    chrome.tabs.remove(sender.tab.id);
   }
 };
 
