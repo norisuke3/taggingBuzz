@@ -11,11 +11,19 @@ $(function(){
       .toggle(!login_status)
       .click(open_login_page)
     .end()
-    .append("<a id='logout'>").find("a:last")
-      .attr("href", "")
-      .text("Logout")
+    .attach("div#online")
+      .append("<a id='setting'>").find("a:last")
+	.attr("href", "")
+	.text("Setting")
+	.click(account_setting)
+      .end()
+      .attach("span").text(" | ").end()
+      .append("<a id='logout'>").find("a:last")
+	.attr("href", "")
+	.text("Logout")
+	.click(logout)
+      .end()
       .toggle(login_status)
-      .click(logout)
     .end()
   .end()
   .attach("div#header")
@@ -44,10 +52,17 @@ function open_login_page(){
   chrome.tabs.create({ url: login });
 }
 
+function account_setting(){
+  var background = chrome.extension.getBackgroundPage();
+  var setting = background.server_url + "account/update";
+
+  chrome.tabs.create({ url: setting });
+}
+
 function logout(){
   var background = chrome.extension.getBackgroundPage();
   
-  $("a#logout").fadeOut(300, function(){
+  $("div#online").fadeOut(300, function(){
     $("a#login").fadeIn(300);
   });
   
