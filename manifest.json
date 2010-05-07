@@ -16,6 +16,11 @@
     "matches": ["http://taggingbuzz.com/session/create*"],
     "js": ["jquery.min.js", "jquery.timer.js", "session_create.js"],
     "all_frame": false
+  },
+  {
+    "matches": ["http://taggingbuzz.com/account/update"],
+    "js": ["jquery.min.js", "timezone_upadte.js"],
+    "all_frame": false
   }    
   ],
   "browser_action": {

@@ -87,6 +87,10 @@ var server = {
   
   close_tab: function(request, sender, sendResponse){
     chrome.tabs.remove(sender.tab.id);
+  },
+  
+  synchronize: function(request, sender, sendResponse){
+    synchronize();
   }
 };
 
