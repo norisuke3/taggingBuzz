@@ -114,6 +114,27 @@ localStorage.__proto__.push = function(key, value, option){
   localStorage.setItem(key, JSON.stringify(array));
 };
 
+// localStorage.unshift(String key, String value, Object option)
+//  function to prepend 'value' to an array assuming that an object keied with 'key' is 
+//  a JSON string of an array. 
+// 
+// default value:
+//   option : { uniq => false }
+//
+localStorage.__proto__.unshift = function(key, value, option){
+  var setting = $.extend({
+    uniq : false
+  }, option);
+
+  var array = localStorage
+		.items(key, { type: "Array" });
+  array.unshift(value);
+  
+  if(setting.uniq){ array = array.uniq(); }
+  
+  localStorage.setItem(key, JSON.stringify(array));
+};
+
 //
 // helper function
 // 
