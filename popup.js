@@ -78,10 +78,18 @@ function populate_items(tags){
     var links = localStorage.items("_" + tag, { type : "Array" });
       
     links.map(function(link){
-      return "http://www.google.com/buzz/" + link;	     
+      return {
+	gid     : link.split(',')[0].split('/').join(""),
+	url      : "http://www.google.com/buzz/" + link.split(',')[0],
+	timestamp: link.split(',')[1]
+      };
     }).forEach(function(link){
+      $("div#top")
+	.attach("div#" + link.gid, [{ name: "class", value: "entry"}])
+	.end()
+      .end();
 
-      $.get(link, function(data){
+      $.get(link.url, function(data){
 	var gSection = $(data).find("div.g-section");
 	      
 	var icon_url = gSection
@@ -102,32 +110,31 @@ function populate_items(tags){
 			     .complementURL({ domain: "www.google.com" })
 			     .attr("target", "_blank");
 
-		
-        $("div#top")
-	.attach("div.entry")    // div.entry
-	  .attach("div.sender") // div.sender
-	    .attach("img.icon") // img.icon
-	      .attr("src", icon_url)
+
+        $("div#" + link.gid)
+	.css("border", "1px solid #000000")
+	.attach("div.sender") // div.sender
+	  .attach("img.icon") // img.icon
+	    .attr("src", icon_url)
+	  .end()
+	.end()
+	.attach("div")
+	  .attach("div.content_header")  // div.content_header
+	    .attach("div.author")        // div.author
+	      .append(author_link)
+	    .end()
+	    .attach("div.time")     // div.timestamp
+	      .text(link.timestamp)
 	    .end()
 	  .end()
-	  .attach("div")
-	    .attach("div.content_header")  // div.content_header
-	      .attach("div.author")        // div.author
-		.append(author_link)
-	      .end()
-	      .attach("div.tag")     // div.tag
-		.text("[ " + tag + " ]")
-	      .end()
-	    .end()
-	    .attach("div.content") // div.content
-	      .text(content)
-	    .end()
-	    .attach("div.link_to_original") // div.link_to_original
-	      .append("<a>").find("a")
-		.attr("href", link)
-		.attr("target", "_blank")
-		.text("original buzz")
-	      .end()
+	  .attach("div.content") // div.content
+	    .text(content)
+	  .end()
+	  .attach("div.link_to_original") // div.link_to_original
+	    .append("<a>").find("a")
+	      .attr("href", link.url)
+	      .attr("target", "_blank")
+	      .text("original buzz")
 	    .end()
 	  .end()
 	.end();

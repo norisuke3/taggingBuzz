@@ -29,7 +29,6 @@ div.search {
 }
 
 div.entry {
-    border: 1px solid #000000;
     -webkit-border-radius: 8px;
     padding: 5px;
     margin-bottom: 10px;
@@ -55,12 +54,13 @@ div.author {
     width: 50%;
 }
 
-div.tag {
+div.time {
     text-align: right;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 8px;
     margin-right: 10px;
+    margin-top: 3px;
     width: 50%;
+    color: #666666;
 }
 
 div.content {

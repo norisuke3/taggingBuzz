@@ -5,6 +5,7 @@ var sync_url     = server_url + "tags/snapshot";
 var activate_url = server_url + "session/activate";
 var logout_url   = server_url + "session/logout";
 var register_url = server_url + "tags/register";
+var formatter = new DateFormat("yyyy-MM-dd HH:mm:ss");
 
 //
 // onRequest handler
@@ -50,12 +51,16 @@ var server = {
   register_tags: function(request, sender, sendResponse){
     var data = JSON.parse(request.tagInfo);
 
-    localStorage.setItem(data.gId + "/" + data.buzzId, data.tags);                // key => permalink,  value => tag
+    localStorage.setItem(data.gId + "/" + data.buzzId, data.tags);    // key => permalink,  value => tag
 
     data.tags.split(', ').forEach(function(tag){
       // put a prefix '_' for every tag for not conflicting with localStorage prototype functions
-      localStorage.push('_' + tag, data.gId + "/" + data.buzzId, { uniq: true }); // key => tag,        value => permalink
-      localStorage.push('tag_list', tag, { uniq: true });                         // key => 'tag_list', value => tag
+      localStorage.unshift(
+	'_' + tag,
+	data.gId + "/" + data.buzzId + "," + formatter.format(new Date),
+	{ only_if_the_gid_is_not_present: true }
+      );                                                              // key => tag,        value => permalink
+      localStorage.push('tag_list', tag, { uniq: true });             // key => 'tag_list', value => tag
     });
 
     // register tags to either the server or the local sync buffer
@@ -148,9 +153,12 @@ var synchronize = function(callback){
           
           snapshot.forEach(function(record){
             localStorage.push("tag_list", record.tag);
-            record.paths.forEach(function(path){
-      	      localStorage.push("_" + record.tag, path);
-      	      buffer[path] = buffer[path] ? buffer[path].concat(record.tag)
+            record.buzzs.forEach(function(buzz){
+      	      localStorage.push(
+		"_" + record.tag, 
+		buzz.path + "," + buzz.time
+	      );
+      	      buffer[buzz.path] = buffer[buzz.path] ? buffer[buzz.path].concat(record.tag)
       				          : [record.tag];
             });
           });

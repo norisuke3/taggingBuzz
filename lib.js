@@ -128,12 +128,23 @@ localStorage.__proto__.unshift = function(key, value, option){
 
   var array = localStorage
 		.items(key, { type: "Array" });
-  array.unshift(value);
+  
+  if(!setting.only_if_the_gid_is_not_present ||
+     (setting.only_if_the_gid_is_not_present && !is_the_gid_present(array, value))){
+    array.unshift(value);
+  }
   
   if(setting.uniq){ array = array.uniq(); }
   
   localStorage.setItem(key, JSON.stringify(array));
 };
+
+function is_the_gid_present(array, value){
+  var gids = array.map(function(data){ return data.split(',')[0]; });
+  var new_gid = value.split(',')[0];
+  
+  return gids.indexOf(new_gid) != -1;
+}
 
 //
 // helper function
