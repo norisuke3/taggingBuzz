@@ -71,13 +71,19 @@ function logout(){
   background.logout();
 }
 
-function populate_items(tags){
-  $("div.entry").remove();
+function populate_items(tags, offset){
+  offset = offset || 0;
+  var number_of_showing_items = 5;
+  var number_of_items;
+  
+  if(offset == 0){ $("div.entry").remove(); }
+  $("div#more").remove();
   
   tags.forEach(function(tag){
     var links = localStorage.items("_" + tag, { type : "Array" });
+    number_of_items = links.length;
       
-    links.map(function(link){
+    links.slice(offset, offset + number_of_showing_items).map(function(link){
       return {
 	gid     : link.split(',')[0].split('/').join(""),
 	url      : "http://www.google.com/buzz/" + link.split(',')[0],
@@ -141,4 +147,19 @@ function populate_items(tags){
       });
     });
   });
+  
+  if(number_of_items > offset + number_of_showing_items){
+    $("div#top")
+      .attach("div#more")
+	.append("<a>").find("a:last")
+	.attr("href", "")
+	.text("More items...")
+	.click(show_more)
+      .end()
+    .end();
+  }
+  
+  function show_more(){
+    populate_items(tags, offset + number_of_showing_items);
+  }
 }
