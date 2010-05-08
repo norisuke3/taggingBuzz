@@ -73,7 +73,7 @@ function logout(){
 
 function populate_items(tags, offset){
   offset = offset || 0;
-  var number_of_showing_items = 5;
+  var number_of_showing_items = 10;
   var number_of_items;
   
   if(offset == 0){ $("div.entry").remove(); }
