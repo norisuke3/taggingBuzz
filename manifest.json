@@ -1,6 +1,6 @@
 {
   "name": "Tagging Buzz",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "Tagging tool for Google Buzz.",
   "icons": { "48": "buzz_48.png",
 	     "128": "buzz_128.png"  },
