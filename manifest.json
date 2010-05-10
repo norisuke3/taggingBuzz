@@ -1,7 +1,7 @@
 {
   "name": "Tagging Buzz",
-  "version": "0.1",
-  "description": "Tag manager for Google Buzz.",
+  "version": "1.0",
+  "description": "Tagfing tool for Google Buzz.",
   "icons": { "48": "buzz_48.png",
 	     "128": "buzz_128.png"  },
   "background_page": "background.html",
